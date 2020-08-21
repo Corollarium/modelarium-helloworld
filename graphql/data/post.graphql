@@ -1,0 +1,41 @@
+extend type Query {
+    posts: [Post!]! @paginate(defaultCount: 10)
+    post(id: ID @eq): Post @find
+}
+
+extend type Mutation {
+    upsertPost(input: PostInput! @spread): Post! @upsert
+    deletePost(id: ID!): Post @delete
+}
+
+input PostInput {
+    id: ID
+    title: Title!
+    content: String!
+    country: Countrycodeiso3!
+}
+
+type Post @migrationTimestamps {
+    id: ID!
+    title: Title! @modelFillable # @MinLength(value: 5) # @MaxLength(value: 25)
+        @renderable(
+            title: true
+            label: "Title"
+            comment: "Please add a descriptive title"
+            placeholder: "Type here"
+            size: "large"
+            card: true
+            table: true
+        )
+    content: Text! @modelFillable # @MinLength(value: 15) @MaxLength(value: 1000)
+        @renderable(
+            label: "Content"
+            comment: "Your post contents"
+        )
+    country: Countrycodeiso3! @modelFillable
+        @renderable(
+            label: "Country"
+            comment: "Pick a country"
+            table: true
+        )
+}
