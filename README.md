@@ -4,7 +4,7 @@ This project is the most basic toy application showing how to use [Modelarium](h
 
 ## Running this code
 
-This code is ready to run. It's a default scaffold Laravel project with Vue ui, except for the `resources/js` directory, which was slightly modified to build a SPA with vue-router and implements a header component. We already added the Graphql files too, of course.
+This code is ready to run. It's a default scaffold Laravel project with Vue ui, except for the `resources/js` directory, which was slightly modified to build a SPA with vue-router and implements a header component, with a corresponding change to routes. We already added the Graphql files too, of course.
 
 First download the repo and install dependencies:
 
