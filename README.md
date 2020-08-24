@@ -2,6 +2,8 @@
 
 This project is the most basic toy application showing how to use [Modelarium](https://github.com/Corollarium/modelarium) to quickly create a web application. It uses [Lighthouse](https://lighthouse-php.com/) as GraphQL engine, serving backend with Laravel.
 
+This project shows how to create a new datatype (`Title`), but it does not have relationships or user authentication. For a more involved and realistic example with those see [modelarium-example](https://github.com/Corollarium/modelarium-example).
+
 ## Running this code
 
 This code is ready to run. It's a default scaffold Laravel project with Vue ui, except for the `resources/js` directory, which was slightly modified to build a SPA with vue-router and implements a header component, with a corresponding change to routes. We already added the Graphql files too, of course.
@@ -123,6 +125,25 @@ type Post @migrationTimestamps {
 This is the actual type declaration. `@migrationTimestamps` instructs Modelarium to generate timestamps on the database table.
 
 We have three fields, `title`, `content` and `country`. Each one has a different type. Modelarium provides a list of countries automatically (we're using the 3-letter ISO codes here). `@modelFillable` declares that these types can be filled by requests in Laravel. We provide a few seettings to the `@renderable` directive, which controls forms, cards and tables. And that's it, from this single file we generate the entire app.
+
+Note that we declare a new type `Title`. A class `Datatype_title` is created in `App\Datatypes`. Titles for this app are strings between 3 and 25 characters. Let's override the `validate()` method for that:
+
+```php
+    /**
+     * Checks if $value is a valid value for this datatype considering the validators.
+     *
+     * @param mixed $value The value you are checking.
+     * @param Model $model The entire model, if your field depends on other things of the model. may be null.
+     * @throws Exception If invalid, with the message.
+     * @return mixed The validated value.
+     */
+    public function validate($value, Model $model = null)
+    {
+        MinLength::validate($value, ['value' => 3]);
+        MaxLength::validate($value, ['value' => 25]);
+        return parent::validate($value, $model);
+    }
+```
 
 ## How would I create this repo from scratch?
 
