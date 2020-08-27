@@ -17,7 +17,7 @@ input PostInput {
 
 type Post @migrationTimestamps {
     id: ID!
-    title: Title! @modelFillable # @MinLength(value: 5) # @MaxLength(value: 25)
+    title: Title! @modelFillable
         @renderable(
             title: true
             label: "Title"
@@ -27,7 +27,7 @@ type Post @migrationTimestamps {
             card: true
             table: true
         )
-    content: Text! @modelFillable # @MinLength(value: 15) @MaxLength(value: 1000)
+    content: Text! @modelFillable
         @renderable(
             label: "Content"
             comment: "Your post contents"

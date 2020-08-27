@@ -4,7 +4,7 @@ This project is the most basic toy application showing how to use [Modelarium](h
 
 This project shows how to create a new datatype (`Title`), but it does not have relationships or user authentication. For a more involved and realistic example with those see [modelarium-example](https://github.com/Corollarium/modelarium-example).
 
-## Running this code
+## Running this code in two minutes
 
 This code is ready to run. It's a default scaffold Laravel project with Vue ui, except for the `resources/js` directory, which was slightly modified to build a SPA with vue-router and implements a header component, with a corresponding change to routes. We already added the Graphql files too, of course.
 
@@ -23,18 +23,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Remember to fix the path to your `database.sqlite` on `.env`.
-
-Now let's generate scaffolding from the Graphql files. They're at the `graphql/data` subdirectory. In a new package you'd run `php artisan modelarium:init` at this point, but we already ran it for you -- it won't hurt to run again, anyway. So let's create scaffolding:
-
-```
-php artisan modelarium:init
-php artisan modelarium:scaffold '*' --everything --lighthouse --overwrite
-```
-
-That's it, you get the entire model/event/database/migration/etc files. We're not creating users in this toy app so no policies are created.
-
-Let's create the DB and seed it:
+Remember to fix the path to your `database.sqlite` on `.env`. Let's create the DB and seed it:
 
 ```
 php artisan migrate:fresh --seed 
@@ -42,13 +31,7 @@ php artisan migrate:fresh --seed
 
 Modelarium automatically generated random data for you. You can create more data with `php artisan db:seed`. 
 
-Now let's generate the frontend. Modelarium creates all the scaffolding for you with the basic design from your chosen CSS framework. We picked Bootstrap with Vue here:
-
-```
-php artisan modelarium:frontend '\App\Models\Post' --framework=HTML --framework=Bootstrap --framework=Vue --overwrite --prettier
-```
-
-That's it, it will create all the files for you. Now let's test. In one terminal open:
+Now let's test. In one terminal open:
 
 ```
 yarn run watch
@@ -61,6 +44,47 @@ php artisan serve --host 0.0.0.0 --port 8000
 ```
 
 now open http://localhost:8000. 
+
+
+## How to generate scaffolding
+
+There's a [full tutorial in the modelarium documentation](https://corollarium.github.io/modelarium/laraveltutorial.html) about how to setup a project from scratch, and also a brief summary on the bottom of this README. This section describes briefly what was already done in this project for you.
+
+After running `composer create-project` and `composer`, init Modelarium:
+
+```
+php artisan modelarium:init
+```
+
+Now create a new datatype `Title`:
+
+```
+php artisan modelarium:datatype title --basetype=string
+```
+
+Implement `app/Datatypes/Datatype_title.php`, to validate and generate random data. 
+
+Now let's generate scaffolding from the Graphql files. This application will only have one model, `post`. Let's great a basic Graphql file for it:
+
+```
+php artisan modelarium:type post
+```
+
+Now you'd fill `graphql/data/post.graphql` and change `graphql/schema.graphql` to include both it and `graphql/types.graphql`. 
+
+Then create scaffolding for the backend:
+
+```
+php artisan modelarium:scaffold '*' --everything --lighthouse --overwrite
+```
+
+That's it, you get the entire model/event/database/migration/etc files. We're not creating users in this toy app so no policies are created.
+
+Now let's generate the frontend. Modelarium creates all the scaffolding for you with the basic design from your chosen CSS framework. We picked Bootstrap with Vue here:
+
+```
+php artisan modelarium:frontend '*' --framework=HTML --framework=Bootstrap --framework=Vue --overwrite --prettier
+```
 
 ## The Graphql file
 
@@ -87,7 +111,7 @@ We add two mutations, one to for upserts (both insert and update) and another fo
 ```graphql
 input PostInput {
     id: ID
-    title: String!
+    title: Title!
     content: String!
     country: Countrycodeiso3!
 }
@@ -98,7 +122,7 @@ We create an `input` entry to make it easier to declare the upsert. Note that id
 ```graphql
 type Post @migrationTimestamps {
     id: ID!
-    title: Title! @modelFillable @MinLength(value: 5) @MaxLength(value: 25)
+    title: Title! @modelFillable 
         @renderable(
             title: true
             label: "Title"
@@ -108,7 +132,7 @@ type Post @migrationTimestamps {
             card: true
             table: true
         )
-    content: Text! @modelFillable @MinLength(value: 15) @MaxLength(value: 1000)
+    content: Text! @modelFillable 
         @renderable(
             label: "Content"
             comment: "Your post contents"
@@ -126,24 +150,6 @@ This is the actual type declaration. `@migrationTimestamps` instructs Modelarium
 
 We have three fields, `title`, `content` and `country`. Each one has a different type. Modelarium provides a list of countries automatically (we're using the 3-letter ISO codes here). `@modelFillable` declares that these types can be filled by requests in Laravel. We provide a few seettings to the `@renderable` directive, which controls forms, cards and tables. And that's it, from this single file we generate the entire app.
 
-Note that we declare a new type `Title`. A class `Datatype_title` is created in `App\Datatypes`. Titles for this app are strings between 3 and 25 characters. Let's override the `validate()` method for that:
-
-```php
-    /**
-     * Checks if $value is a valid value for this datatype considering the validators.
-     *
-     * @param mixed $value The value you are checking.
-     * @param Model $model The entire model, if your field depends on other things of the model. may be null.
-     * @throws Exception If invalid, with the message.
-     * @return mixed The validated value.
-     */
-    public function validate($value, Model $model = null)
-    {
-        MinLength::validate($value, ['value' => 3]);
-        MaxLength::validate($value, ['value' => 25]);
-        return parent::validate($value, $model);
-    }
-```
 
 ## How would I create this repo from scratch?
 
@@ -168,24 +174,11 @@ php artisan ui vue
 # install npm deps
 npm install
 
-# add prettier to generate well formatted code
-npm add prettier
+# add prettier to generate well formatted code, raw-loader and vue-router
+npm add prettier raw-loader vue-router
 ```
 
-That covers scaffolding. Now let's code.
-
-```shell
-# Init Modelarium
-artisan modelarium:init
-
-# Create the title datatype:
-artisan datatype title --basetype=string
-
-# Create the post graphql type:
-artisan modelarium:type post
-```
-
-At this point you have most of what you need. You'd edit `graphql/schema.graphql` to include `types.graphql`, and write your `graphql/data/post.graphql`.
+We modified the `resources/js` code and the `resources/views/layouts/app.blade.php` to implement a Vue-based SPA, including routing. We also changed `routes/web.php` to properly serve the base HTML/JS for all routes.
 
 ## License
 
