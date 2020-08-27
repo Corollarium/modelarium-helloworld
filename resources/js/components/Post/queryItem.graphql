@@ -1,0 +1,8 @@
+query($id: ID!) {
+    post(id: $id) {
+        id
+        title
+        content
+        country
+    }
+}

@@ -1,0 +1,15 @@
+query($page: Int!) {
+    posts(page: $page) {
+        data {
+            id
+            title
+        }
+
+        paginatorInfo {
+            currentPage
+            perPage
+            total
+            lastPage
+        }
+    }
+}

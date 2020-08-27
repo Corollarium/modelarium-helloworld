@@ -1,0 +1,14 @@
+query($page: Int!) {
+    users(page: $page) {
+        data {
+            id
+        }
+
+        paginatorInfo {
+            currentPage
+            perPage
+            total
+            lastPage
+        }
+    }
+}
