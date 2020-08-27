@@ -21,6 +21,7 @@ Create a database file and copy `.env`:
 touch database/database.sqlite
 cp .env.example .env
 php artisan key:generate
+composer dump-autoload
 ```
 
 Remember to fix the path to your `database.sqlite` on `.env`. Let's create the DB and seed it:
