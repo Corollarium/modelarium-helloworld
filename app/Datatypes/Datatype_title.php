@@ -3,9 +3,7 @@
 namespace App\Datatypes;
 
 use Formularium\Model;
-use Formularium\Exception\ValidatorException;
-use Formularium\Validator\MaxLength;
-use Formularium\Validator\MinLength;
+use Illuminate\Support\Str;
 
 class Datatype_title extends \Formularium\Datatype\Datatype_string
 {
@@ -18,7 +16,7 @@ class Datatype_title extends \Formularium\Datatype\Datatype_string
 
     public function getRandom(array $params = [])
     {
-        return mb_substr(static::faker()->sentence(4), $this->MAX_STRING_LENGTH);
+        return mb_substr(static::faker()->words(4, true), 0, $this->MAX_STRING_LENGTH);
     }
 
     /**
@@ -33,6 +31,6 @@ class Datatype_title extends \Formularium\Datatype\Datatype_string
     {
         // in this case parent does all the checking, but here is where you'd implement your validation
         // logic, probably calling a Validator class.
-        return parent::validate($value, $model);
+        return Str::studly(parent::validate($value, $model));
     }
 }
