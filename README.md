@@ -54,7 +54,7 @@ There's a [full tutorial in the modelarium documentation](https://corollarium.gi
 After running `composer create-project` and `composer`, init Modelarium:
 
 ```
-php artisan modelarium:init
+php artisan modelarium:publish
 ```
 
 Now create a new datatype `Title`:
