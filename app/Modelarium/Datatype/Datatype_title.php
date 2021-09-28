@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Datatypes;
+namespace App\Modelarium\Datatype;
 
 use Formularium\Model;
 use Illuminate\Support\Str;
